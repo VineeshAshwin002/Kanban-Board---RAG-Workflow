@@ -1,0 +1,221 @@
+<section class="project-shell">
+  <div class="modal-container">
+    <div class="modal-header">
+      <div class="modal-title-block">
+        <h2 class="modal-title">Create Project</h2>
+        <p class="modal-description">Set up your project and define its workflow.</p>
+      </div>
+      <button
+        type="button"
+        class="modal-close-button"
+        (click)="closeModal()"
+        aria-label="Close create project dialog"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+      </button>
+    </div>
+
+    <form class="project-form" [formGroup]="projectForm" (ngSubmit)="submitProject()">
+      <div class="field-group">
+        <label for="project-name" class="field-label">
+          Project Name
+          <span class="required-indicator" aria-label="required">*</span>
+        </label>
+        <p class="field-hint">A name helps you identify your project.</p>
+        <input
+          id="project-name"
+          type="text"
+          class="form-input"
+          formControlName="projectName"
+          placeholder="Enter project name"
+          (blur)="projectNameControl.markAsTouched()"
+        />
+        @if (
+          projectNameControl.invalid &&
+          (projectNameControl.dirty || projectNameControl.touched)
+        ) {
+          <div class="error-container">
+            <svg class="error-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+            <small class="error-message">Project name is required.</small>
+          </div>
+        }
+      </div>
+
+      <div class="field-group">
+        <label for="status-input" class="field-label">
+          Project Statuses
+          <span class="required-indicator" aria-label="required">*</span>
+        </label>
+        <p class="field-hint">Define the workflow stages used by this project.</p>
+
+        <div class="status-input-wrapper">
+          <input
+            id="status-input"
+            type="text"
+            class="form-input"
+            formControlName="statusInput"
+            placeholder="Type a status name"
+            (keydown.enter)="$event.preventDefault(); addStatus()"
+            (blur)="statusInputControl.markAsTouched()"
+          />
+          <button
+            type="button"
+            class="add-status-button"
+            [disabled]="!statusInputControl.value.trim()"
+            (click)="addStatus()"
+            aria-label="Add status"
+          >
+            Add
+          </button>
+        </div>
+
+        @if (statusInputControl.hasError('emptyStatus') && statusInputControl.touched) {
+          <div class="error-container">
+            <svg class="error-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+            <small class="error-message">Status cannot be empty.</small>
+          </div>
+        }
+        @if (statusInputControl.hasError('duplicate') && statusInputControl.touched) {
+          <div class="error-container">
+            <svg class="error-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+            <small class="error-message">Status already exists.</small>
+          </div>
+        }
+
+        <div class="status-list" aria-live="polite" role="region" aria-label="Project statuses">
+          @if (statuses.length === 0) {
+            <p class="status-empty-hint">No statuses added yet. Add one above to get started.</p>
+          } @else {
+            <div class="status-chips">
+              @for (status of statuses; track status; let i = $index) {
+                <div class="status-chip">
+                  <span class="status-chip-text">{{ status }}</span>
+                  <button
+                    type="button"
+                    class="status-chip-remove"
+                    (click)="removeStatus(i)"
+                    [attr.aria-label]="'Remove ' + status + ' status'"
+                    [disabled]="statuses.length === 1"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label for="user-input" class="field-label">
+          Project Users
+          <span class="required-indicator" aria-label="optional">(Optional)</span>
+        </label>
+        <p class="field-hint">Add team members to your project.</p>
+
+        <div class="user-input-wrapper">
+          <select
+            id="user-input"
+            class="form-input"
+            formControlName="userInput"
+            multiple
+            size="6"
+            (blur)="userInputControl.markAsTouched()"
+          >
+            <option *ngFor="let user of allUsers; trackBy: trackUser" [value]="user.id">
+              {{ user.name }}
+            </option>
+          </select>
+          <button
+            type="button"
+            class="add-user-button"
+            [disabled]="!userInputControl.value.length"
+            (click)="addUser()"
+            aria-label="Add selected users"
+          >
+            Add
+          </button>
+        </div>
+
+        @if (userInputControl.hasError('emptyUser') && userInputControl.touched) {
+          <div class="error-container">
+            <svg class="error-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+            <small class="error-message">User name cannot be empty.</small>
+          </div>
+        }
+        @if (userInputControl.hasError('duplicateUser') && userInputControl.touched) {
+          <div class="error-container">
+            <svg class="error-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+            <small class="error-message">User already added.</small>
+          </div>
+        }
+
+        <div class="user-list" aria-live="polite" role="region" aria-label="Project users">
+          @if (users.length === 0) {
+            <p class="user-empty-hint">No users added yet. Add one above to get started.</p>
+          } @else {
+            <div class="user-chips">
+              @for (user of users; track user.id; let i = $index) {
+                <div class="user-chip">
+                  <span class="user-chip-text">{{ user.name }}</span>
+                  <button
+                    type="button"
+                    class="user-chip-remove"
+                    (click)="removeUser(i)"
+                    [attr.aria-label]="'Remove ' + user.name + ' from project'"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button
+          type="button"
+          class="button button-secondary"
+          (click)="closeModal()"
+          [disabled]="isSubmitting()"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="button button-primary"
+          [disabled]="!projectForm.valid || statuses.length === 0 || isSubmitting()"
+        >
+          @if (isSubmitting()) {
+            <span class="button-loading">
+              <svg class="spinner" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8-8z" fill="none"/>
+                <path d="M16.5 12c0-2.49-2.01-4.5-4.5-4.5S7.5 9.51 7.5 12"/>
+              </svg>
+              Creating...
+            </span>
+          } @else {
+            Create Project
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</section>

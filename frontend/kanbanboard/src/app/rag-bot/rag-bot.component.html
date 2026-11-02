@@ -1,0 +1,114 @@
+<main class="rag-page">
+  <header class="rag-header">
+    <a class="back-link" routerLink="/" aria-label="Back to workflow">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M19 11H7.83l5.12-5.12-1.41-1.41L4 12l7.54 7.53 1.41-1.41L7.83 13H19v-2z" />
+      </svg>
+      <span>Back to Workflow</span>
+    </a>
+
+    <div class="assistant-heading">
+      <div class="assistant-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="m12 2 1.7 6.3L20 10l-6.3 1.7L12 18l-1.7-6.3L4 10l6.3-1.7L12 2Zm7 13 .7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15Z" />
+        </svg>
+      </div>
+      <div>
+        <p class="eyebrow">Ticket intelligence</p>
+        <h1>RAG Assistant</h1>
+        <p class="subtitle">Ask questions about your projects and tickets.</p>
+      </div>
+    </div>
+  </header>
+
+  <section class="chat-panel" aria-label="RAG assistant conversation">
+    <div #messageList class="message-list" aria-live="polite">
+      @if (messages().length === 0) {
+        <div class="welcome-state">
+          <div class="welcome-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 3a9 9 0 0 0-9 9c0 2.1.73 4.03 1.95 5.56L3.5 21l3.44-1.38A8.96 8.96 0 0 0 12 21a9 9 0 1 0 0-18Zm-3 8.25a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5Zm6 0a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5Z" />
+            </svg>
+          </div>
+          <h2>Ask your ticket workspace</h2>
+          <p>I can find ticket assignments, statuses, project details, and related work from your indexed board.</p>
+
+          <div class="suggestions" aria-label="Suggested questions">
+            @for (suggestion of suggestions; track suggestion) {
+              <button type="button" class="suggestion" (click)="useSuggestion(suggestion)">
+                <span>{{ suggestion }}</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
+              </button>
+            }
+          </div>
+        </div>
+      } @else {
+        @for (message of messages(); track $index) {
+          <article class="message" [class.message--user]="message.role === 'user'" [class.message--assistant]="message.role === 'assistant'">
+            @if (message.role === 'assistant') {
+              <div class="message-avatar" aria-hidden="true">✦</div>
+            }
+            <div class="message-content">
+              <p class="message-label">{{ message.role === 'user' ? 'You' : 'RAG Assistant' }}</p>
+              @if (message.content) {
+                <div class="message-bubble">{{ message.content }}</div>
+              }
+
+              @if (message.sources?.length) {
+                <div class="sources">
+                  <p class="sources-title">Sources</p>
+                  @for (source of message.sources; track source.project_id + '-' + source.ticket_id) {
+                    <div class="source-item">
+                      <div>
+                        <strong>{{ source.title || 'Ticket reference' }}</strong>
+                        <span>Project {{ source.project_id }} · Ticket {{ source.ticket_id }}</span>
+                      </div>
+                      @if (source.view_url) {
+                        <a [href]="source.view_url" target="_self">View Ticket <span aria-hidden="true">↗</span></a>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </article>
+        }
+      }
+
+      @if (isLoading()) {
+        <div class="message message--assistant">
+          <div class="message-avatar" aria-hidden="true">✦</div>
+          <div class="message-content">
+            <p class="message-label">RAG Assistant</p>
+            <div class="message-bubble loading-bubble" aria-label="Assistant is thinking">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (errorMessage()) {
+        <div class="error-message" role="alert">{{ errorMessage() }}</div>
+      }
+    </div>
+
+    <form class="composer" (submit)="$event.preventDefault(); submitQuestion()">
+      <textarea
+        [value]="question()"
+        (input)="question.set($any($event.target).value)"
+        (keydown)="onComposerKeydown($event)"
+        rows="1"
+        placeholder="Ask about a ticket or project..."
+        aria-label="Ask about a ticket or project"
+        [disabled]="isLoading()"
+      ></textarea>
+      <button type="submit" class="send-button" [disabled]="isLoading() || !question().trim()" aria-label="Send question" title="Send question">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m3.4 20.4 17.3-7.4c.9-.4.9-1.6 0-2L3.4 3.6c-.7-.3-1.4.3-1.1 1l1.8 5.7 8.9 1.7-8.9 1.7-1.8 5.7c-.3.7.4 1.3 1.1 1Z" />
+        </svg>
+      </button>
+    </form>
+  </section>
+</main>

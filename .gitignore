@@ -1,0 +1,57 @@
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+backend/.env
+backend/test.py
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+ENV/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Python packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Flask and local logs
+instance/
+*.log
+
+# Node and Angular
+node_modules/
+frontend/kanbanboard/node_modules/
+frontend/kanbanboard/dist/
+frontend/kanbanboard/.angular/
+frontend/kanbanboard/coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local vector database and generated embeddings
+vectorstore/
+*.sqlite3
+*.sqlite3-journal
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db

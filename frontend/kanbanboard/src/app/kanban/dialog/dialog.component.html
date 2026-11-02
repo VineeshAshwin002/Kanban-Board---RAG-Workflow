@@ -1,0 +1,57 @@
+<div class="dialog-backdrop" (click)="close()">
+  <div class="dialog-card" role="dialog" aria-modal="true" aria-labelledby="task-dialog-title" (click)="$event.stopPropagation()">
+    <div class="dialog-header">
+      <h3 id="task-dialog-title">{{ isEditMode ? 'Edit Task' : 'Create Task' }}</h3>
+      <button type="button" class="icon-button" (click)="close()" aria-label="Close dialog">×</button>
+    </div>
+
+    <form class="task-form" [formGroup]="taskForm" (ngSubmit)="submitTask()">
+      <div class="field-group">
+        <label for="task-title">Title</label>
+        <input id="task-title" type="text" formControlName="title" placeholder="Task title" />
+        @if (titleControl.invalid && (titleControl.dirty || titleControl.touched)) {
+          <small class="error-message">Title is required.</small>
+        }
+      </div>
+
+      <div class="field-group">
+        <label for="task-description">Description</label>
+        <textarea id="task-description" rows="4" formControlName="description" placeholder="Describe the task"></textarea>
+      </div>
+
+      <div class="field-grid">
+        <div class="field-group">
+          <label for="task-status">Status</label>
+          <select id="task-status" formControlName="status">
+            @for (status of statusOptions; track status) {
+              <option [value]="status">{{ status }}</option>
+            }
+          </select>
+          @if (statusControl.invalid && (statusControl.dirty || statusControl.touched)) {
+            <small class="error-message">Status is required.</small>
+          }
+        </div>
+
+        <div class="field-group">
+          <label for="task-assignee">Assign To</label>
+          <select id="task-assignee" formControlName="assignee">
+            <option value="">No assignment</option>
+            @for (user of userOptions; track user.id) {
+              <option [value]="user.id">{{ user.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label for="task-due-date">Due Date</label>
+          <input id="task-due-date" type="date" formControlName="dueDate" />
+        </div>
+      </div>
+
+      <div class="dialog-actions">
+        <button type="button" class="secondary-button" (click)="close()">Cancel</button>
+        <button type="submit" class="primary-button">{{ isEditMode ? 'Save Changes' : 'Save Task' }}</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,98 @@
+<section class="board-shell">
+  <div class="board-header">
+    <div class="board-header__title">
+      <p class="eyebrow">Project board</p>
+      <h2>{{ project?.projectName || 'Project board' }}</h2>
+    </div>
+    <div class="board-header__actions">
+      <button type="button" class="primary-button" (click)="openCreateTaskDialog()">
+        + New Task
+      </button>
+      <a
+        class="assistant-button"
+        routerLink="/rag-bot"
+        aria-label="Ask AI about your tickets"
+        title="Ask AI about your tickets"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m12 2 1.7 6.3L20 10l-6.3 1.7L12 18l-1.7-6.3L4 10l6.3-1.7L12 2Zm7 13 .7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15Z" />
+        </svg>
+        <span>AI Assistant</span>
+      </a>
+    </div>
+  </div>
+
+  @if (!project) {
+    <div class="empty-state">
+      <div class="empty-state__content">
+        <h3>No project created yet</h3>
+        <p>Create a project to start managing tasks.</p>
+      </div>
+    </div>
+  } @else {
+    <div class="board-wrapper" cdkDropListGroup>
+      <div class="board-columns">
+        @for (status of columns; track status) {
+          <div
+            class="column"
+            cdkDropList
+            [id]="'cdk-drop-list-' + getStatusId(status)"
+            [cdkDropListData]="getColumnTasks(status)"
+            (cdkDropListDropped)="onTaskDrop($event)"
+          >
+            <div class="column-header">
+              <div class="column-header__title">
+                <h3>{{ status }}</h3>
+              </div>
+              <span>{{ getColumnTasks(status).length }}</span>
+            </div>
+
+            <div class="task-list">
+              @for (task of getColumnTasks(status); track task.id) {
+                <div class="task-card" cdkDrag [cdkDragData]="task">
+                  <div class="task-card__meta">
+                    <span class="task-status-tag">{{ task.status }}</span>
+                    <button
+                      type="button"
+                      class="task-edit-button"
+                      aria-label="Edit task"
+                      (click)="$event.stopPropagation(); openEditTaskDialog(task)"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm14.71-9.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/>
+                      </svg>
+                    </button>
+                  </div>
+
+                  <h4>{{ task.title }}</h4>
+
+                  @if (task.description) {
+                    <p>{{ task.description }}</p>
+                  }
+
+                  @if (task.dueDate) {
+                    <div class="task-date">
+                      <span class="task-date__icon">📅</span>
+                      {{ task.dueDate | date: 'MMM d, y' }}
+                    </div>
+                  }
+                </div>
+              } @empty {
+                <div class="empty-column">
+                  <span>No tasks yet</span>
+                  <button type="button" class="mini-add-button" (click)="openCreateTaskDialog()">
+                    + Add Task
+                  </button>
+                </div>
+              }
+            </div>
+
+            <button type="button" class="column-add-button" (click)="openCreateTaskDialog()">
+              + Add Task
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</section>

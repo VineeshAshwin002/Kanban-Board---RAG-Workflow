@@ -1,0 +1,86 @@
+﻿@if (router.url.startsWith('/rag-bot')) {
+  <router-outlet></router-outlet>
+} @else {
+<div class="app-shell">
+  <aside class="project-sidebar">
+    <div class="sidebar-header">
+      <h3>Projects</h3>
+      <button type="button" class="sidebar-create-button" (click)="openCreateProjectForm()">
+        +
+      </button>
+    </div>
+
+    @if (projects().length === 0) {
+      <div class="empty-projects">
+        <div class="empty-projects-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+          </svg>
+        </div>
+        <p class="empty-projects-title">No projects yet</p>
+        <span class="empty-projects-hint">Create your first project to start organizing your work.</span>
+        <button type="button" class="primary-project-button" (click)="openCreateProjectForm()">
+          + Create Project
+        </button>
+      </div>
+    } @else {
+      <div class="project-list" aria-label="Project list">
+        @for (projectItem of projects(); track projectItem.id) {
+          <button
+            type="button"
+            class="project-item"
+            [class.active]="projectItem.id === project()?.id"
+            (click)="selectProject(projectItem.id)"
+          >
+            {{ projectItem.projectName }}
+          </button>
+        }
+      </div>
+    }
+  </aside>
+
+  <main class="board-panel">
+    @if (!project()) {
+      <div class="no-project-state">
+        <div class="no-project-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+          </svg>
+        </div>
+        <h2>No project selected</h2>
+        <p>Create or select a project from the sidebar to get started.</p>
+        <button type="button" class="primary-project-button" (click)="openCreateProjectForm()">
+          + Create Project
+        </button>
+      </div>
+    } @else {
+      <app-board
+        [project]="project()"
+        [tasks]="tasks()"
+        (addTask)="openTaskDialog()"
+        (editTask)="openTaskDialog($event)"
+        (taskMoved)="onTaskMove($event)"
+      ></app-board>
+    }
+  </main>
+
+  @if (isProjectFormOpen()) {
+    <div class="project-form-overlay" (click)="closeCreateProjectForm()">
+      <div class="project-form-panel" (click)="$event.stopPropagation()">
+        <app-create-project 
+          (projectCreated)="handleProjectCreate($event)"
+          (closeRequested)="closeCreateProjectForm()"
+        ></app-create-project>
+      </div>
+    </div>
+  }
+
+  @if (isDialogOpen() && project()) {
+    <app-dialog
+      [dialogData]="dialogData"
+      (saveTask)="onTaskSave($event)"
+      (closeDialog)="closeTaskDialog()"
+    ></app-dialog>
+  }
+</div>
+}

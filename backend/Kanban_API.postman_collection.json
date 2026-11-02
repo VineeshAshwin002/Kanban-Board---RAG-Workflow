@@ -1,0 +1,238 @@
+{
+  "info": {
+    "_postman_id": "kanban-api-collection",
+    "name": "Kanban Board API",
+    "description": "Collection of API endpoints for Kanban Board management system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "Projects",
+      "item": [
+        {
+          "name": "Create Project",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"My Awesome Project\",\n    \"description\": \"A project to manage the kanban board\",\n    \"created_by\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/create_project",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["create_project"]
+            }
+          }
+        },
+        {
+          "name": "Get All Projects",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/get_projects",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["get_projects"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tickets",
+      "item": [
+        {
+          "name": "Create Ticket",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"project_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"title\": \"Implement user authentication\",\n    \"description\": \"Add login and registration functionality\",\n    \"status_id\": 1,\n    \"assigned_user_id\": 1,\n    \"created_by\": 1,\n    \"due_date\": \"2024-12-31T23:59:59\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/create_ticket",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["create_ticket"]
+            }
+          }
+        },
+        {
+          "name": "Get Tickets by Project",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/get_tickets/550e8400-e29b-41d4-a716-446655440000",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["get_tickets", "550e8400-e29b-41d4-a716-446655440000"]
+            }
+          }
+        },
+        {
+          "name": "Update Ticket Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"ticket_id\": 1,\n    \"status_id\": 2\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/update_status",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["update_status"]
+            }
+          }
+        },
+        {
+          "name": "Edit Ticket",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"ticket_id\": 1,\n    \"title\": \"Updated ticket title\",\n    \"description\": \"Updated description\",\n    \"status_id\": 2,\n    \"assigned_user_id\": 2,\n    \"due_date\": \"2024-12-31T23:59:59\",\n    \"updated_by\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/edit_ticket",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["edit_ticket"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Statuses",
+      "item": [
+        {
+          "name": "Create Status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"project_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"name\": \"In Review\",\n    \"description\": \"Waiting for code review\",\n    \"sort_order\": 4\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/create_status",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["create_status"]
+            }
+          }
+        },
+        {
+          "name": "Get Statuses by Project",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/get_statuses/550e8400-e29b-41d4-a716-446655440000",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["get_statuses", "550e8400-e29b-41d4-a716-446655440000"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"user_name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"created_by\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/create_user",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["create_user"]
+            }
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/get_users",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["get_users"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
